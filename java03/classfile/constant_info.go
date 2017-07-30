@@ -21,3 +21,39 @@ const (
 type ConstantInfo interface {
 	readInfo(reader *ClassReader)
 }
+
+func readConstantInfo(reader *ClassReader, cp ConstantPool) ConstantInfo {
+	tag := reader.readUint8()
+	ci := newConstantInfo(tag, cp)
+	ci.readInfo(reader)
+	return ci
+}
+
+func newConstantInfo(tag uint8, cp ConstantPool) ConstantInfo {
+	switch tag {
+	case CONSTANT_Class:
+		return &ConstantClassInfo{cp: cp}
+	case CONSTANT_Fieldref:
+		return &ConstantFieldrefInfo{ConstantMemberInfo{cp: cp}}
+	case CONSTANT_Methodref:
+		return &ConstantMethodrefInfo{ConstantMemberInfo{cp: cp}}
+	case CONSTANT_InterfaceMethodref:
+		return &ConstantInterfaceMethodrefInfo{ConstantMemberInfo{cp: cp}}
+	case CONSTANT_String:
+		return &ConstantStringInfo{cp: cp}
+	case CONSTANT_Integer:
+		return &ConstantIntegerInfo{}
+	case CONSTANT_Float:
+		return &ConstantFloatInfo{}
+	case CONSTANT_Long:
+		return &ConstantLongInfo{}
+	case CONSTANT_Double:
+		return &ConstantDoubleInfo{}
+	case CONSTANT_Utf8:
+		return &ConstantUTF8Info{}
+	case CONSTANT_NameAndType:
+		return &ConstantNameAndTypeInfo{}
+	default:
+		panic("java.lang.ClassFormatError:constant pool tag!")
+	}
+}

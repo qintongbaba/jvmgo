@@ -9,7 +9,7 @@ type ClassFile struct {
 	minorVersion uint16       // 次版本号
 	majorVersion uint16       // 主版本号
 	constantPool ConstantPool // 常量池
-	accessFlags  uint16
+	accessFlags  uint16       //类访问标志
 	thisClass    uint16
 	superClass   uint16
 	interfaces   []uint16
@@ -34,6 +34,9 @@ func Parse(classData []byte) (cf *ClassFile, err error) {
 func (self *ClassFile) read(reader *ClassReader) {
 	self.readAndCheckMagic(reader)
 	self.readAndCheckVersion(reader)
+	self.readConstantPool(reader)
+	self.readAccessFlags(reader)
+	self.readThisClass(reader)
 }
 
 //读取魔数
@@ -58,4 +61,19 @@ func (self *ClassFile) readAndCheckVersion(reader *ClassReader) {
 		}
 	}
 	panic("java.lang.UnsupportedClassVersionError!")
+}
+
+//读取常量池
+func (self *ClassFile) readConstantPool(reader *ClassReader) {
+	self.constantPool = readContantPool(reader)
+}
+
+//读取类访问标志
+func (self *ClassFile) readAccessFlags(reader *ClassReader) {
+	self.accessFlags = reader.readUint16()
+}
+
+//读取当前类
+func (self *ClassFile) readThisClass(reader *ClassReader) {
+	self.thisClass = reader.readUint16()
 }

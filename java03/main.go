@@ -32,5 +32,4 @@ func startJVM(cmd *Cmd) {
 
 	cf, _ := classfile.Parse(data)
 	fmt.Printf("classFile:%#v\n", cf)
-
 }
